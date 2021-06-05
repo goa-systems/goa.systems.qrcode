@@ -18,7 +18,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
 	testImplementation 'org.junit.platform:junit-platform-commons:1.7.0'
 	
-	api 'goa.systems:commons:0.0.2'
+	api ('goa.systems:commons:0.0.2'){transitive = true}
 	
 	/* Logging */
 	implementation 'org.slf4j:slf4j-api:1.7.30'
@@ -26,8 +26,8 @@ dependencies {
 	testRuntimeOnly 'ch.qos.logback:logback-classic:1.2.3'
 	
 	/* QR code logic */
-	api 'com.google.zxing:core:3.4.1'
-	api 'com.google.zxing:javase:3.4.1'
+	api ('com.google.zxing:core:3.4.1'){transitive = true}
+	api ('com.google.zxing:javase:3.4.1'){transitive = true}
 }
 
 tasks.named('test') {
