@@ -1,5 +1,6 @@
 package goa.systems.qrcode;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -54,6 +55,28 @@ public class Generator {
 		logger.info("QR code file created successfully in {}", path.getAbsolutePath());
 		logger.info("URL {}", path.toURI());
 		return path;
+	}
+
+	/**
+	 * Generates a minimal sized QR code that can be scaled to any size
+	 * 
+	 * @param tr Transfer data
+	 * @return File object of svg file on disk
+	 */
+	public ByteArrayInputStream generateSvgStream(Transfer tr) {
+
+		StringWriter result = new StringWriter();
+		try {
+			Document d = generateSvgDocument(tr);
+			Transformer t = XmlFramework.getTransformer();
+			t.setOutputProperty(OutputKeys.INDENT, "yes");
+			t.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+			t.transform(new DOMSource(d), new StreamResult(result));
+		} catch (TransformerException e) {
+			logger.error("Error generating SVG stream.", e);
+		}
+		logger.info("QR code stream created successfully.");
+		return new ByteArrayInputStream(result.toString().getBytes());
 	}
 
 	/**

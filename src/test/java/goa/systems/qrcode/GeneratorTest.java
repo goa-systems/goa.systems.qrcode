@@ -3,8 +3,10 @@ package goa.systems.qrcode;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -58,7 +60,26 @@ class GeneratorTest {
 		} catch (SAXException | IOException | ParserConfigurationException e) {
 			logger.error("Exception occured.", e);
 		}
+	}
 
+	/**
+	 * Generates a SVG QR code into the temporary directory, tests its existence and
+	 * deletes the file afterwards.
+	 */
+	@Test
+	void testStreamGeneration() {
+
+		Transfer tr = new Transfer();
+		tr.setBic("00000000000 ");
+		tr.setIban("AT000000000000000000");
+		tr.setCreditor("Prename Surname");
+		tr.setAmount("0000.00");
+		tr.setText("TestTransfer");
+
+		Generator generator = new Generator();
+		ByteArrayInputStream svg = generator.generateSvgStream(tr);
+		assertNotNull(svg);
+		assertTrue(svg.available() > 0);
 	}
 
 	/**
@@ -80,6 +101,5 @@ class GeneratorTest {
 		assertTrue(svg.exists());
 		svg.delete();
 		assertFalse(svg.exists());
-
 	}
 }
