@@ -1,9 +1,11 @@
 plugins {
 	id 'java-library'
+	id 'maven-publish'
 }
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+version = ARTIFACT_VERSION
 
 repositories {
 	mavenCentral()
@@ -30,4 +32,70 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+	repositories {
+        maven {
+            url = REPO_DIR
+        }
+    }
+    publications {
+        mavenJava(MavenPublication) {
+        	groupId = 'goa.systems'
+        	artifactId = 'qrcode'
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'GOA systems qrcode'
+                description = 'Library containing qr code generator logic.'
+                url = 'https://goa.systems/qrcode'
+                licenses {
+                    license {
+                        name = 'GPLv3'
+                        url = 'https://www.gnu.org/licenses/gpl-3.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'goa'
+                        name = 'Andreas Gottardi'
+                        email = 'goa@goa.systems'
+                    }
+                }
+                scm {
+                    connection = 'scm:git@github.com:andreasgottardi/goa.systems.qrcode.git'
+                    url = 'https://github.com/goa.systems.qrcode'
+                }
+            }
+        }
+    }
+}
+
+/*  This task exports the generated jar files into the directory "build/remote".
+    Build tasks can grab them from there and handle them as needed. */
+task localPublish (group: 'publishing', description: 'Exports all jar files to publish') {
+	
+	dependsOn publish
+	mustRunAfter publish
+    doLast {
+		copy {
+			from(fileTree(REPO_DIR) { includes }.files) {
+		        include '**/*.jar'
+		    }
+		    into 'build/remote'
+	    }
+	}
 }
