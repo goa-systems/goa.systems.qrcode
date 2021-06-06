@@ -1,8 +1,13 @@
 package goa.systems.qrcode;
 
+import goa.systems.commons.validity.Validity;
+import goa.systems.qrcode.exceptions.WrongDataException;
+
 /**
- * This class represents a bank transfer with the required data to create a qr
+ * This class represents a bank transfer with the required data to create a QR
  * code.
+ * 
+ * Hint: Set either reference or text. Not both.
  * 
  * @author ago
  * @since 2021-06-05
@@ -82,20 +87,31 @@ public class Transfer {
 		this.message = message;
 	}
 
-	public String toQRContent() {
+	public String getTemplate() {
 		//@formatter:off
-		return String.format("BCD\n"
-				+ "001\n"
-				+ "1\n"
-				+ "SCT\n"
-				+ "%s\n"
-				+ "%s\n"
-				+ "%s\n"
-				+ "%s\n"
-				+ "%s\n"
-				+ "%s\n"
-				+ "%s\n"
-				+ "%s",
+		return "BCD\n"
+			+ "001\n"
+			+ "1\n"
+			+ "SCT\n"
+			+ "%s\n"
+			+ "%s\n"
+			+ "%s\n"
+			+ "%s\n"
+			+ "%s\n"
+			+ "%s\n"
+			+ "%s\n"
+			+ "%s";
+		//@formatter:on
+	}
+
+	public String toQRContent() throws WrongDataException {
+
+		if (!Validity.isOnlyOneSet(this.reference, this.text)) {
+			throw new WrongDataException("Reference and text are set. Choose only one.");
+		}
+
+		//@formatter:off
+		return String.format(getTemplate(),
 				this.bic == null ? "" : this.bic,
 				this.creditor == null ? "" : this.creditor,
 				this.iban == null ? "" : this.iban,
@@ -106,5 +122,13 @@ public class Transfer {
 				this.message == null ? "" : this.message
 				);
 		//@formatter:on
+	}
+
+	/**
+	 * 
+	 * @return Empty template.
+	 */
+	public String toEmptyQRContent() {
+		return String.format(getTemplate(), "", "", "", "", "", "", "", "");
 	}
 }

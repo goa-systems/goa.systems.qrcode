@@ -32,6 +32,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import goa.systems.commons.xml.XmlFramework;
+import goa.systems.qrcode.exceptions.WrongDataException;
 
 public class Generator {
 
@@ -110,7 +111,15 @@ public class Generator {
 	 */
 	public Document generateSvgDocument(Transfer tr) {
 
-		String str = tr.toQRContent();
+		String str;
+
+		try {
+			str = tr.toQRContent();
+		} catch (WrongDataException e1) {
+			logger.error("WrongDataException occured. Setting code to default.", e1);
+			str = tr.toEmptyQRContent();
+		}
+
 		String charset = "UTF-8";
 		Document d = null;
 		try {

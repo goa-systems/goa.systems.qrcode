@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -20,6 +21,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import goa.systems.commons.xml.XmlFramework;
+import goa.systems.qrcode.exceptions.WrongDataException;
 
 class GeneratorTest {
 
@@ -101,5 +103,24 @@ class GeneratorTest {
 		assertTrue(svg.exists());
 		svg.delete();
 		assertFalse(svg.exists());
+	}
+
+	/**
+	 * Tests if a exception is thrown when text and reference are set.
+	 */
+	@Test
+	void testWrongDataException() {
+
+		Transfer tr = new Transfer();
+		tr.setBic("00000000000 ");
+		tr.setIban("AT000000000000000000");
+		tr.setCreditor("Prename Surname");
+		tr.setAmount("0000.00");
+		tr.setReference("TestReference");
+		tr.setText("TestText");
+
+		assertThrows(WrongDataException.class, () -> {
+			tr.toQRContent();
+		});
 	}
 }
