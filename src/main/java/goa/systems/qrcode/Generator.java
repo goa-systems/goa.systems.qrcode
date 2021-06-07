@@ -1,7 +1,11 @@
 package goa.systems.qrcode;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.UUID;
@@ -28,6 +32,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import goa.systems.commons.xml.XmlFramework;
+import goa.systems.qrcode.exceptions.WrongDataException;
 
 public class Generator {
 
@@ -40,32 +45,89 @@ public class Generator {
 	 * @return File object of svg file on disk
 	 */
 	public File generateQrCode(Transfer tr) {
-
-		//@formatter:off
-		String str = String.format(""
-				+ "BCD\n"
-				+ "001\n"
-				+ "1\n"
-				+ "SCT\n"
-				+ "%s\n"
-				+ "%s\n"
-				+ "%s\n"
-				+ "EUR%s\n"
-				+ "\n"
-				+ "\n"
-				+ "%s", tr.getBic(), tr.getRecipientname(), tr.getIban(), tr.getSum(), tr.getUsage());
-		//@formatter:on
-
 		File path = new File(System.getProperty("java.io.tmpdir"), String.format("%s.svg", UUID.randomUUID()));
+		String charset = "UTF-8";
+		try (FileOutputStream fos = new FileOutputStream(path)) {
+			String svg = generateSvgString(tr);
+			fos.write(svg.getBytes(Charset.forName(charset)));
+		} catch (IOException e) {
+			logger.error("Error generating QR code.", e);
+		}
+		logger.info("QR code file created successfully in {}", path.getAbsolutePath());
+		logger.info("URL {}", path.toURI());
+		return path;
+	}
+
+	/**
+	 * Generates a minimal sized QR code that can be scaled to any size
+	 * 
+	 * @param tr Transfer data
+	 * @return File object of svg file on disk
+	 */
+	public ByteArrayInputStream generateSvgStream(Transfer tr) {
+
+		StringWriter result = new StringWriter();
+		try {
+			Document d = generateSvgDocument(tr);
+			Transformer t = XmlFramework.getTransformer();
+			t.setOutputProperty(OutputKeys.INDENT, "yes");
+			t.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+			t.transform(new DOMSource(d), new StreamResult(result));
+		} catch (TransformerException e) {
+			logger.error("Error generating SVG stream.", e);
+		}
+		logger.info("QR code stream created successfully.");
+		return new ByteArrayInputStream(result.toString().getBytes());
+	}
+
+	/**
+	 * Generates a minimal sized QR code that can be scaled to any size
+	 * 
+	 * @param tr Transfer data
+	 * @return File object of svg file on disk
+	 */
+	public String generateSvgString(Transfer tr) {
+
+		StringWriter result = new StringWriter();
+
+		try {
+			Document d = generateSvgDocument(tr);
+			Transformer t = XmlFramework.getTransformer();
+			t.setOutputProperty(OutputKeys.INDENT, "yes");
+			t.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+			t.transform(new DOMSource(d), new StreamResult(result));
+		} catch (TransformerException e) {
+			logger.error("Error generating SVG string.", e);
+		}
+		logger.info("QR code string created successfully.");
+		return result.toString();
+	}
+
+	/**
+	 * Generates a minimal sized QR code that can be scaled to any size
+	 * 
+	 * @param tr Transfer data
+	 * @return File object of svg file on disk
+	 */
+	public Document generateSvgDocument(Transfer tr) {
+
+		String str;
+
+		try {
+			str = tr.toQRContent();
+		} catch (WrongDataException e1) {
+			logger.error("WrongDataException occured. Setting code to default.", e1);
+			str = tr.toEmptyQRContent();
+		}
 
 		String charset = "UTF-8";
-
+		Document d = null;
 		try {
 			BitMatrix bm = generateQRcodeInternal(str, charset, 0, 0);
 			int width = bm.getWidth();
 			int height = bm.getHeight();
 
-			Document d = getBaseSvg();
+			d = getBaseSvg();
 			Node svg = d.getFirstChild();
 
 			svg.getAttributes().getNamedItem("width").setNodeValue(String.format("%dpx", width));
@@ -78,19 +140,14 @@ public class Generator {
 					}
 				}
 			}
-			Transformer t = XmlFramework.getTransformer();
-			t.setOutputProperty(OutputKeys.INDENT, "yes");
-			t.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-			t.transform(new DOMSource(d), new StreamResult(path));
-		} catch (WriterException | IOException | SAXException | ParserConfigurationException | TransformerException e) {
-			logger.error("General error template.", e);
+		} catch (WriterException | IOException | SAXException | ParserConfigurationException e) {
+			logger.error("Error generating SVG document.", e);
 		}
-		logger.info("QR Code created successfully in {}", path.getAbsolutePath());
-		logger.info("URL {}", path.toURI());
-		return path;
+		logger.info("QR code document created successfully.");
+		return d;
 	}
 
-	public BitMatrix generateQRcodeInternal(String data, String charset, int h, int w)
+	private BitMatrix generateQRcodeInternal(String data, String charset, int h, int w)
 			throws WriterException, IOException {
 		Map<EncodeHintType, ErrorCorrectionLevel> hints = new EnumMap<>(EncodeHintType.class);
 		hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
@@ -102,7 +159,7 @@ public class Generator {
 		return XmlFramework.getDocumentBuilder().parse(Generator.class.getResourceAsStream("/base.svg"));
 	}
 
-	public Node generateDot(Document d, int x, int y, String color) {
+	private Node generateDot(Document d, int x, int y, String color) {
 		Element node = d.createElement("rect");
 		node.setAttribute("x", Integer.toString(x));
 		node.setAttribute("y", Integer.toString(y));
