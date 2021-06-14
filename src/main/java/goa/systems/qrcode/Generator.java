@@ -110,15 +110,21 @@ public class Generator {
 	 * @return File object of svg file on disk
 	 */
 	public Document generateSvgDocument(Transfer tr) {
-
-		String str;
-
 		try {
-			str = tr.toQRContent();
-		} catch (WrongDataException e1) {
-			logger.error("WrongDataException occured. Setting code to default.", e1);
-			str = tr.toEmptyQRContent();
+			return generateSvgDocument(tr.toQRContent());
+		} catch (WrongDataException e) {
+			logger.error("Error in SVG generator.", e);
+			return generateSvgDocument("");
 		}
+	}
+
+	/**
+	 * Generates a minimal sized QR code that can be scaled to any size
+	 * 
+	 * @param tr Transfer data
+	 * @return File object of svg file on disk
+	 */
+	public Document generateSvgDocument(String str) {
 
 		String charset = "UTF-8";
 		Document d = null;
