@@ -121,7 +121,7 @@ public class Generator {
 	/**
 	 * Generates a minimal sized QR code that can be scaled to any size
 	 * 
-	 * @param tr Transfer data
+	 * @param str String to encode
 	 * @return File object of svg file on disk
 	 */
 	public Document generateSvgDocument(String str) {
