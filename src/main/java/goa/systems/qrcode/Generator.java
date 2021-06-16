@@ -22,6 +22,12 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import goa.systems.commons.xml.XmlFramework;
 
+/**
+ * Generator class. Generates SVG graphics.
+ * 
+ * @author ago
+ *
+ */
 public class Generator {
 
 	private static final Logger logger = LoggerFactory.getLogger(Generator.class);
@@ -69,6 +75,14 @@ public class Generator {
 				hints);
 	}
 
+	/**
+	 * Loads base SVG file (empty SVG file).
+	 * 
+	 * @return org.w3c.Document representation of an empty SVG file.
+	 * @throws SAXException                 in case of error.
+	 * @throws IOException                  in case of error.
+	 * @throws ParserConfigurationException in case of error.
+	 */
 	public Document getBaseSvg() throws SAXException, IOException, ParserConfigurationException {
 		return XmlFramework.getDocumentBuilder().parse(Generator.class.getResourceAsStream("/base.svg"));
 	}
