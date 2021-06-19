@@ -17,6 +17,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.oned.EAN8Writer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
@@ -32,12 +33,11 @@ public class Generator {
 	 * @param str String to encode
 	 * @return File object of svg file on disk
 	 */
-	public Document generateSvgDocument(String str) {
+	public Document generateSvgDocument(String str, double scalingfactor, BarcodeFormat bf) {
 
-		String charset = "UTF-8";
 		Document d = null;
 		try {
-			BitMatrix bm = generateQRcodeInternal(str, charset, 0, 0);
+			BitMatrix bm = generateQRcodeInternal(str, bf, 50, 0);
 			int width = bm.getWidth();
 			int height = bm.getHeight();
 
@@ -61,12 +61,18 @@ public class Generator {
 		return d;
 	}
 
-	private BitMatrix generateQRcodeInternal(String data, String charset, int h, int w)
-			throws WriterException, IOException {
-		Map<EncodeHintType, ErrorCorrectionLevel> hints = new EnumMap<>(EncodeHintType.class);
-		hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
-		return new QRCodeWriter().encode(new String(data.getBytes(charset), charset), BarcodeFormat.QR_CODE, w, h,
-				hints);
+	private BitMatrix generateQRcodeInternal(String data, BarcodeFormat bf, int h, int w) throws WriterException {
+
+		if (bf == BarcodeFormat.QR_CODE) {
+			Map<EncodeHintType, ErrorCorrectionLevel> hints = new EnumMap<>(EncodeHintType.class);
+			hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
+			return new QRCodeWriter().encode(data, bf, w, h, hints);
+		} else if (bf == BarcodeFormat.EAN_8) {
+			return new EAN8Writer().encode(data, bf, w, h);
+		} else {
+			logger.error("Barcodeformat {} currently unsupported.", bf);
+			return new BitMatrix(0);
+		}
 	}
 
 	public Document getBaseSvg() throws SAXException, IOException, ParserConfigurationException {

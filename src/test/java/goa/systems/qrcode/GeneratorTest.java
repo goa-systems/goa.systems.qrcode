@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import com.google.zxing.BarcodeFormat;
+
 class GeneratorTest {
 
 	/**
@@ -27,7 +29,7 @@ class GeneratorTest {
 	 * deletes the file afterwards.
 	 */
 	@Test
-	void testFileGeneration() {
+	void testQRCode() {
 
 		//@formatter:off
 		String tr = "BCD\n"
@@ -45,7 +47,26 @@ class GeneratorTest {
 
 		Generator generator = new Generator();
 		assertDoesNotThrow(() -> {
-			Document d = generator.generateSvgDocument(tr);
+			Document d = generator.generateSvgDocument(tr, 1.0, BarcodeFormat.QR_CODE);
+			Node node = d.getFirstChild();
+			assertEquals("svg", node.getNodeName());
+		});
+	}
+
+	/**
+	 * Generates a SVG QR code into the temporary directory, tests its existence and
+	 * deletes the file afterwards.
+	 */
+	@Test
+	void testEANCode() {
+
+		//@formatter:off
+		String tr = "9031101";
+		//@formatter:on
+
+		Generator generator = new Generator();
+		assertDoesNotThrow(() -> {
+			Document d = generator.generateSvgDocument(tr, 1.0, BarcodeFormat.EAN_8);
 			Node node = d.getFirstChild();
 			assertEquals("svg", node.getNodeName());
 		});
