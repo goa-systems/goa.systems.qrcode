@@ -17,6 +17,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.oned.EAN8Writer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
@@ -36,27 +37,41 @@ public class Generator {
 	 * Generates a minimal sized QR code that can be scaled to any size
 	 * 
 	 * @param str String to encode
-	 * @return File object of svg file on disk
+	 * @param sf  Scaling factor (applied to x and y)
+	 * @param bf  Barcode format
+	 * @return org.w3c.Document representation of SVG file.
 	 */
-	public Document generateSvgDocument(String str) {
+	public Document generateSvgDocument(String str, double sf, BarcodeFormat bf) {
+		return generateSvgDocument(str, sf, sf, bf);
+	}
 
-		String charset = "UTF-8";
+	/**
+	 * Generates a minimal sized QR code that can be scaled to any size
+	 * 
+	 * @param str String to encode
+	 * @param xf  Scaling factor width
+	 * @param yf  Scaling factor height
+	 * @param bf  Barcode format
+	 * @return org.w3c.Document representation of SVG file.
+	 */
+	public Document generateSvgDocument(String str, double xf, double yf, BarcodeFormat bf) {
+
 		Document d = null;
 		try {
-			BitMatrix bm = generateQRcodeInternal(str, charset, 0, 0);
+			BitMatrix bm = generateQRcodeInternal(str, bf, 0, 0);
 			int width = bm.getWidth();
 			int height = bm.getHeight();
 
 			d = getBaseSvg();
 			Node svg = d.getFirstChild();
 
-			svg.getAttributes().getNamedItem("width").setNodeValue(String.format("%dpx", width));
-			svg.getAttributes().getNamedItem("height").setNodeValue(String.format("%dpx", height));
+			svg.getAttributes().getNamedItem("width").setNodeValue(String.format("%fpx", width * xf));
+			svg.getAttributes().getNamedItem("height").setNodeValue(String.format("%fpx", height * yf));
 
-			for (int x = 0; x < height; x++) {
-				for (int y = 0; y < width; y++) {
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
 					if (bm.get(x, y)) {
-						svg.appendChild(generateDot(d, x, y, "black"));
+						svg.appendChild(generateDot(d, x, y, xf, yf, "black"));
 					}
 				}
 			}
@@ -67,12 +82,18 @@ public class Generator {
 		return d;
 	}
 
-	private BitMatrix generateQRcodeInternal(String data, String charset, int h, int w)
-			throws WriterException, IOException {
-		Map<EncodeHintType, ErrorCorrectionLevel> hints = new EnumMap<>(EncodeHintType.class);
-		hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
-		return new QRCodeWriter().encode(new String(data.getBytes(charset), charset), BarcodeFormat.QR_CODE, w, h,
-				hints);
+	private BitMatrix generateQRcodeInternal(String data, BarcodeFormat bf, int h, int w) throws WriterException {
+
+		if (bf == BarcodeFormat.QR_CODE) {
+			Map<EncodeHintType, ErrorCorrectionLevel> hints = new EnumMap<>(EncodeHintType.class);
+			hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
+			return new QRCodeWriter().encode(data, bf, w, h, hints);
+		} else if (bf == BarcodeFormat.EAN_8) {
+			return new EAN8Writer().encode(data, bf, w, h);
+		} else {
+			logger.error("Barcodeformat {} currently unsupported.", bf);
+			return new BitMatrix(0);
+		}
 	}
 
 	/**
@@ -87,12 +108,12 @@ public class Generator {
 		return XmlFramework.getDocumentBuilder().parse(Generator.class.getResourceAsStream("/base.svg"));
 	}
 
-	private Node generateDot(Document d, int x, int y, String color) {
+	private Node generateDot(Document d, int x, int y, double xf, double yf, String color) {
 		Element node = d.createElement("rect");
-		node.setAttribute("x", Integer.toString(x));
-		node.setAttribute("y", Integer.toString(y));
-		node.setAttribute("width", "1");
-		node.setAttribute("height", "1");
+		node.setAttribute("x", Double.toString(x * xf));
+		node.setAttribute("y", Double.toString(y * yf));
+		node.setAttribute("width", Double.toString(xf));
+		node.setAttribute("height", Double.toString(yf));
 		node.setAttribute("fill", color);
 		return node;
 	}
