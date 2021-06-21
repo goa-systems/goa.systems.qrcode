@@ -16,8 +16,19 @@ import org.xml.sax.SAXException;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
+import com.google.zxing.aztec.AztecWriter;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.datamatrix.DataMatrixWriter;
+import com.google.zxing.oned.CodaBarWriter;
+import com.google.zxing.oned.Code128Writer;
+import com.google.zxing.oned.Code39Writer;
+import com.google.zxing.oned.Code93Writer;
+import com.google.zxing.oned.EAN13Writer;
 import com.google.zxing.oned.EAN8Writer;
+import com.google.zxing.oned.ITFWriter;
+import com.google.zxing.oned.UPCAWriter;
+import com.google.zxing.oned.UPCEWriter;
+import com.google.zxing.pdf417.PDF417Writer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
@@ -32,6 +43,8 @@ import goa.systems.commons.xml.XmlFramework;
 public class Generator {
 
 	private static final Logger logger = LoggerFactory.getLogger(Generator.class);
+
+	private static final String BARCODE_NOT_SUPPORTED = "Barcodeformat {} currently unsupported.";
 
 	/**
 	 * Generates a minimal sized QR code that can be scaled to any size
@@ -90,8 +103,30 @@ public class Generator {
 			return new QRCodeWriter().encode(data, bf, w, h, hints);
 		} else if (bf == BarcodeFormat.EAN_8) {
 			return new EAN8Writer().encode(data, bf, w, h);
+		} else if (bf == BarcodeFormat.AZTEC) {
+			return new AztecWriter().encode(data, bf, w, h);
+		} else if (bf == BarcodeFormat.CODABAR) {
+			return new CodaBarWriter().encode(data, bf, w, h);
+		} else if (bf == BarcodeFormat.CODE_39) {
+			return new Code39Writer().encode(data, bf, w, h);
+		} else if (bf == BarcodeFormat.CODE_93) {
+			return new Code93Writer().encode(data, bf, w, h);
+		} else if (bf == BarcodeFormat.CODE_128) {
+			return new Code128Writer().encode(data, bf, w, h);
+		} else if (bf == BarcodeFormat.DATA_MATRIX) {
+			return new DataMatrixWriter().encode(data, bf, w, h);
+		} else if (bf == BarcodeFormat.EAN_13) {
+			return new EAN13Writer().encode(data, bf, w, h);
+		} else if (bf == BarcodeFormat.ITF) {
+			return new ITFWriter().encode(data, bf, w, h);
+		} else if (bf == BarcodeFormat.PDF_417) {
+			return new PDF417Writer().encode(data, bf, w, h);
+		} else if (bf == BarcodeFormat.UPC_A) {
+			return new UPCAWriter().encode(data, bf, w, h);
+		} else if (bf == BarcodeFormat.UPC_E) {
+			return new UPCEWriter().encode(data, bf, w, h);
 		} else {
-			logger.error("Barcodeformat {} currently unsupported.", bf);
+			logger.error(BARCODE_NOT_SUPPORTED, bf);
 			return new BitMatrix(0);
 		}
 	}

@@ -89,6 +89,28 @@ class GeneratorTest {
 	 * Generates a SVG EAN8 code.
 	 */
 	@Test
+	void testAztecCodeAsFile2() {
+
+		//@formatter:off
+		String tr = "9031101";
+		//@formatter:on
+
+		Generator generator = new Generator();
+		assertDoesNotThrow(() -> {
+			Document d = generator.generateSvgDocument(tr, 20, BarcodeFormat.AZTEC);
+			File output = new File(System.getProperty("java.io.tmpdir"),
+					String.format("%s.svg", UUID.randomUUID().toString()));
+			XmlFramework.getTransformer().transform(new DOMSource(d), new StreamResult(output));
+			assertTrue(output.exists());
+			output.delete();
+			assertFalse(output.exists());
+		});
+	}
+
+	/**
+	 * Generates a SVG EAN8 code.
+	 */
+	@Test
 	void testEANCodeAsFile2() {
 
 		//@formatter:off
