@@ -28,7 +28,7 @@ class GeneratorTest {
 	void testBaseSvg() {
 		Generator generator = new Generator();
 		assertDoesNotThrow(() -> {
-			Document d = generator.getBaseSvg();
+			Document d = generator.getBaseSvg(1, 1);
 			Node node = d.getFirstChild();
 			assertEquals("svg", node.getNodeName());
 		});

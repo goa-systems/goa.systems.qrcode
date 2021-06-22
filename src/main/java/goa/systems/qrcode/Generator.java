@@ -6,8 +6,10 @@ import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -31,8 +33,6 @@ import com.google.zxing.oned.UPCEWriter;
 import com.google.zxing.pdf417.PDF417Writer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-
-import goa.systems.commons.xml.XmlFramework;
 
 /**
  * Generator class. Generates SVG graphics.
@@ -75,11 +75,8 @@ public class Generator {
 			int width = bm.getWidth();
 			int height = bm.getHeight();
 
-			d = getBaseSvg();
+			d = getBaseSvg(width * xf, height * yf);
 			Node svg = d.getFirstChild();
-
-			svg.getAttributes().getNamedItem("width").setNodeValue(String.format("%fpx", width * xf));
-			svg.getAttributes().getNamedItem("height").setNodeValue(String.format("%fpx", height * yf));
 
 			for (int x = 0; x < width; x++) {
 				for (int y = 0; y < height; y++) {
@@ -91,7 +88,7 @@ public class Generator {
 		} catch (WriterException | IOException | SAXException | ParserConfigurationException e) {
 			logger.error("Error generating SVG document.", e);
 		}
-		logger.info("QR code document created successfully.");
+		logger.info("Document created successfully.");
 		return d;
 	}
 
@@ -134,17 +131,26 @@ public class Generator {
 	/**
 	 * Loads base SVG file (empty SVG file).
 	 * 
+	 * @param height
+	 * @param width
+	 * 
 	 * @return org.w3c.Document representation of an empty SVG file.
 	 * @throws SAXException                 in case of error.
 	 * @throws IOException                  in case of error.
 	 * @throws ParserConfigurationException in case of error.
 	 */
-	public Document getBaseSvg() throws SAXException, IOException, ParserConfigurationException {
-		return XmlFramework.getDocumentBuilder().parse(Generator.class.getResourceAsStream("/base.svg"));
+	public Document getBaseSvg(double width, double height)
+			throws SAXException, IOException, ParserConfigurationException {
+		DOMImplementation impl = SVGDOMImplementation.getDOMImplementation();
+		Document document = impl.createDocument(SVGDOMImplementation.SVG_NAMESPACE_URI, "svg", null);
+		Element root = document.getDocumentElement();
+		root.setAttributeNS(null, "width", Double.toString(width));
+		root.setAttributeNS(null, "height", Double.toString(height));
+		return document;
 	}
 
 	private Node generateDot(Document d, int x, int y, double xf, double yf, String color) {
-		Element node = d.createElement("rect");
+		Element node = d.createElementNS(SVGDOMImplementation.SVG_NAMESPACE_URI, "rect");
 		node.setAttribute("x", Double.toString(x * xf));
 		node.setAttribute("y", Double.toString(y * yf));
 		node.setAttribute("width", Double.toString(xf));
