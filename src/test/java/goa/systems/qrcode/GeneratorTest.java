@@ -28,7 +28,7 @@ class GeneratorTest {
 	void testBaseSvg() {
 		Generator generator = new Generator();
 		assertDoesNotThrow(() -> {
-			Document d = generator.getBaseSvg();
+			Document d = generator.getBaseSvg(1, 1);
 			Node node = d.getFirstChild();
 			assertEquals("svg", node.getNodeName());
 		});
@@ -76,6 +76,28 @@ class GeneratorTest {
 		Generator generator = new Generator();
 		assertDoesNotThrow(() -> {
 			Document d = generator.generateSvgDocument(tr, 1.0, BarcodeFormat.EAN_8);
+			File output = new File(System.getProperty("java.io.tmpdir"),
+					String.format("%s.svg", UUID.randomUUID().toString()));
+			XmlFramework.getTransformer().transform(new DOMSource(d), new StreamResult(output));
+			assertTrue(output.exists());
+			output.delete();
+			assertFalse(output.exists());
+		});
+	}
+
+	/**
+	 * Generates a SVG EAN8 code.
+	 */
+	@Test
+	void testAztecCodeAsFile2() {
+
+		//@formatter:off
+		String tr = "9031101";
+		//@formatter:on
+
+		Generator generator = new Generator();
+		assertDoesNotThrow(() -> {
+			Document d = generator.generateSvgDocument(tr, 20, BarcodeFormat.AZTEC);
 			File output = new File(System.getProperty("java.io.tmpdir"),
 					String.format("%s.svg", UUID.randomUUID().toString()));
 			XmlFramework.getTransformer().transform(new DOMSource(d), new StreamResult(output));
