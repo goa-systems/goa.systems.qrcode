@@ -1,4 +1,4 @@
-package goa.systems.qrcode;
+package goa.systems.qrcode.tests;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,26 +9,30 @@ import org.w3c.dom.Node;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
-import com.google.zxing.oned.Code128Reader;
+import com.google.zxing.oned.EAN13Reader;
 
-class Code128Test {
+import goa.systems.qrcode.Generator;
+import goa.systems.qrcode.testlogic.CodeHelper;
+
+class ITFTest {
 
 	@Test
 	void test() {
 
 		//@formatter:off
-		String tr = "01234565";
+		String tr = "0123456789012";
 		//@formatter:on
 
 		Generator generator = new Generator();
 
-		Document d = generator.generateSvgDocument(tr, 10.0, BarcodeFormat.CODE_128);
+		Document d = generator.generateSvgDocument(tr, 10.0, BarcodeFormat.EAN_13);
 		Node node = d.getFirstChild();
 		assertEquals("svg", node.getNodeName());
 
 		assertDoesNotThrow(() -> {
-			Result r = new Code128Reader().decode(CodeHelper.toImage(d));
+			Result r = new EAN13Reader().decode(CodeHelper.toBinaryBitmap(d));
 			assertEquals(tr, r.getText());
+			CodeHelper.debugOutput(d);
 		});
 	}
 }

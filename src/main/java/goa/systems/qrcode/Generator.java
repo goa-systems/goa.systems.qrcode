@@ -88,7 +88,7 @@ public class Generator {
 		} catch (WriterException | IOException | SAXException | ParserConfigurationException e) {
 			logger.error("Error generating SVG document.", e);
 		}
-		logger.info("Document created successfully.");
+		logger.info("{} document created successfully.", bf);
 		return d;
 	}
 
@@ -149,6 +149,17 @@ public class Generator {
 		return document;
 	}
 
+	/**
+	 * Generates a scaled dot at the defined position.
+	 * 
+	 * @param d     Document to derive the dot from.
+	 * @param x     Coordinate of the new dot.
+	 * @param y     Coordinate of the new dot.
+	 * @param xf    Scale factor of the new dot. ( 1 times scale factor).
+	 * @param yf    Scale factor of the new dot. ( 1 times scale factor).
+	 * @param color Colour of the new dot.
+	 * @return A node representing a bit matrix dot in the SVG document.
+	 */
 	private Node generateDot(Document d, int x, int y, double xf, double yf, String color) {
 		Element node = d.createElementNS(SVGDOMImplementation.SVG_NAMESPACE_URI, "rect");
 		node.setAttribute("x", Double.toString(x * xf));

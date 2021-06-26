@@ -1,4 +1,4 @@
-package goa.systems.qrcode;
+package goa.systems.qrcode.tests;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,9 +9,12 @@ import org.w3c.dom.Node;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
-import com.google.zxing.oned.Code93Reader;
+import com.google.zxing.oned.Code39Reader;
 
-class Code93Test {
+import goa.systems.qrcode.Generator;
+import goa.systems.qrcode.testlogic.CodeHelper;
+
+class Code39Test {
 
 	@Test
 	void test() {
@@ -22,13 +25,14 @@ class Code93Test {
 
 		Generator generator = new Generator();
 
-		Document d = generator.generateSvgDocument(tr, 10.0, BarcodeFormat.CODE_93);
+		Document d = generator.generateSvgDocument(tr, 10.0, BarcodeFormat.CODE_39);
 		Node node = d.getFirstChild();
 		assertEquals("svg", node.getNodeName());
 
 		assertDoesNotThrow(() -> {
-			Result r = new Code93Reader().decode(CodeHelper.toImage(d));
+			Result r = new Code39Reader().decode(CodeHelper.toBinaryBitmap(d));
 			assertEquals(tr, r.getText());
+			CodeHelper.debugOutput(d);
 		});
 	}
 }

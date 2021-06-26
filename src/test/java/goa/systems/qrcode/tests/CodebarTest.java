@@ -1,4 +1,4 @@
-package goa.systems.qrcode;
+package goa.systems.qrcode.tests;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -9,35 +9,30 @@ import org.w3c.dom.Node;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
-import com.google.zxing.qrcode.QRCodeReader;
+import com.google.zxing.oned.CodaBarReader;
 
-class QRCodeWriterTest {
+import goa.systems.qrcode.Generator;
+import goa.systems.qrcode.testlogic.CodeHelper;
+
+class CodebarTest {
 
 	@Test
 	void test() {
+
 		//@formatter:off
-		String tr = "BCD\n"
-				+ "001\n"
-				+ "1\n"
-				+ "SCT\n"
-				+ "00000000000 \n"
-				+ "Prename Surname\n"
-				+ "AT000000000000000000\n"
-				+ "0000.00\n"
-				+ "\n"
-				+ "\n"
-				+ "TestTransfer";
+		String tr = "01234565";
 		//@formatter:on
 
 		Generator generator = new Generator();
 
-		Document d = generator.generateSvgDocument(tr, 1.0, BarcodeFormat.QR_CODE);
+		Document d = generator.generateSvgDocument(tr, 10.0, BarcodeFormat.CODABAR);
 		Node node = d.getFirstChild();
 		assertEquals("svg", node.getNodeName());
 
 		assertDoesNotThrow(() -> {
-			Result r = new QRCodeReader().decode(CodeHelper.toImage(d));
+			Result r = new CodaBarReader().decode(CodeHelper.toBinaryBitmap(d));
 			assertEquals(tr, r.getText());
+			CodeHelper.debugOutput(d);
 		});
 	}
 }
