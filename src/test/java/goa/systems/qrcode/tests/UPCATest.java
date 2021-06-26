@@ -25,7 +25,7 @@ class UPCATest {
 
 		Generator generator = new Generator();
 
-		Document d = generator.generateSvgDocument(tr, 10.0, BarcodeFormat.UPC_A);
+		Document d = generator.generateSvgDocument(tr, 1.0, BarcodeFormat.UPC_A);
 		Node node = d.getFirstChild();
 		assertEquals("svg", node.getNodeName());
 

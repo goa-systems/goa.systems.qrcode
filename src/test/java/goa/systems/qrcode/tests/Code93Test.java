@@ -25,7 +25,7 @@ class Code93Test {
 
 		Generator generator = new Generator();
 
-		Document d = generator.generateSvgDocument(tr, 10.0, BarcodeFormat.CODE_93);
+		Document d = generator.generateSvgDocument(tr, 1.0, BarcodeFormat.CODE_93);
 		Node node = d.getFirstChild();
 		assertEquals("svg", node.getNodeName());
 

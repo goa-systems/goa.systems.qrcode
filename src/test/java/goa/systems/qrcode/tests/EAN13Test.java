@@ -25,7 +25,7 @@ class EAN13Test {
 
 		Generator generator = new Generator();
 
-		Document d = generator.generateSvgDocument(tr, 10.0, BarcodeFormat.ITF);
+		Document d = generator.generateSvgDocument(tr, 1.0, BarcodeFormat.ITF);
 		Node node = d.getFirstChild();
 		assertEquals("svg", node.getNodeName());
 

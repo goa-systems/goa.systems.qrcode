@@ -25,7 +25,7 @@ class Code128Test {
 
 		Generator generator = new Generator();
 
-		Document d = generator.generateSvgDocument(tr, 10.0, BarcodeFormat.CODE_128);
+		Document d = generator.generateSvgDocument(tr, 1.0, BarcodeFormat.CODE_128);
 		Node node = d.getFirstChild();
 		assertEquals("svg", node.getNodeName());
 

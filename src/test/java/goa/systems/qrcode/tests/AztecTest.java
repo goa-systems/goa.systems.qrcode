@@ -25,7 +25,7 @@ class AztecTest {
 
 		Generator generator = new Generator();
 
-		Document d = generator.generateSvgDocument(tr, 10.0, BarcodeFormat.AZTEC);
+		Document d = generator.generateSvgDocument(tr, 1.0, BarcodeFormat.AZTEC);
 		Node node = d.getFirstChild();
 		assertEquals("svg", node.getNodeName());
 

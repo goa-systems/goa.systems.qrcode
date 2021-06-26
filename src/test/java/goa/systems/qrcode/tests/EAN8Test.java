@@ -25,7 +25,7 @@ class EAN8Test {
 
 		Generator generator = new Generator();
 
-		Document d = generator.generateSvgDocument(tr, 1.0, 50, BarcodeFormat.EAN_8);
+		Document d = generator.generateSvgDocument(tr, 1.0, BarcodeFormat.EAN_8);
 		Node node = d.getFirstChild();
 		assertEquals("svg", node.getNodeName());
 

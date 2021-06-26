@@ -35,7 +35,12 @@ dependencies {
 }
 
 tasks.named('test') {
+	
 	useJUnitPlatform()
+	
+	/* Take the system property from the "gradle.properties" file or 
+	from the -PSAVE_GENERATED_IMAGES=[true|false] command line parameter. */
+	systemProperty 'save.generated.images', SAVE_GENERATED_IMAGES
 }
 
 java {

@@ -25,7 +25,7 @@ class DataMatrixTest {
 
 		Generator generator = new Generator();
 
-		Document d = generator.generateSvgDocument(tr, 50, BarcodeFormat.DATA_MATRIX);
+		Document d = generator.generateSvgDocument(tr, 10, BarcodeFormat.DATA_MATRIX);
 		Node node = d.getFirstChild();
 		assertEquals("svg", node.getNodeName());
 

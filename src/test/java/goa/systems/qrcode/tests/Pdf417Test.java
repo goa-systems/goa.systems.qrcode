@@ -25,7 +25,7 @@ class Pdf417Test {
 
 		Generator generator = new Generator();
 
-		Document d = generator.generateSvgDocument(tr, 100, BarcodeFormat.PDF_417);
+		Document d = generator.generateSvgDocument(tr, 1, BarcodeFormat.PDF_417);
 		Node node = d.getFirstChild();
 		assertEquals("svg", node.getNodeName());
 

@@ -28,9 +28,6 @@ public class CodeHelper {
 	/* Width of silent area around the codes. */
 	private static final int silent = 64;
 
-	/* Set this to true to persist generated images in the temporary directory. */
-	private static final boolean doDebug = false;
-
 	/**
 	 * Converts the given SVG document to a BinaryBitmap object.
 	 * 
@@ -135,7 +132,7 @@ public class CodeHelper {
 	 * @return Returns the file object the image is written to.
 	 */
 	public static File debugOutput(String base, Document d) throws TranscoderException, IOException {
-		if (!doDebug) {
+		if ("true".compareTo(System.getProperty("save.generated.images")) != 0) {
 			return null;
 		}
 		File file = new File(System.getProperty("java.io.tmpdir"),

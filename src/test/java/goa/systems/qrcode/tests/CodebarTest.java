@@ -25,7 +25,7 @@ class CodebarTest {
 
 		Generator generator = new Generator();
 
-		Document d = generator.generateSvgDocument(tr, 10.0, BarcodeFormat.CODABAR);
+		Document d = generator.generateSvgDocument(tr, 1.0, BarcodeFormat.CODABAR);
 		Node node = d.getFirstChild();
 		assertEquals("svg", node.getNodeName());
 
