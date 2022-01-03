@@ -30,8 +30,8 @@ dependencies {
 	api 'com.google.zxing:javase:3.4.1'
 	
 	/* Batik required for testing of svg graphics */
-	implementation 'org.apache.xmlgraphics:batik:1.14'
-	implementation 'org.apache.xmlgraphics:batik-transcoder:1.14'
+	api 'org.apache.xmlgraphics:batik:1.14'
+	api 'org.apache.xmlgraphics:batik-transcoder:1.14'
 }
 
 tasks.named('test') {
