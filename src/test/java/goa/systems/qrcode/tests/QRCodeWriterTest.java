@@ -26,7 +26,7 @@ class QRCodeWriterTest {
 				+ "00000000000 \n"
 				+ "Prename Surname\n"
 				+ "AT000000000000000000\n"
-				+ "0000.00\n"
+				+ "EUR0000.00\n"
 				+ "\n"
 				+ "\n"
 				+ "TestTransfer";
