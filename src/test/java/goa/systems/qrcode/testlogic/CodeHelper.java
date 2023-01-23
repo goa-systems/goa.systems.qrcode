@@ -132,7 +132,8 @@ public class CodeHelper {
 	 * @return Returns the file object the image is written to.
 	 */
 	public static File debugOutput(String base, Document d) throws TranscoderException, IOException {
-		if ("true".compareTo(System.getProperty("save.generated.images")) != 0) {
+		String savegenimages = System.getProperty("save.generated.images");
+		if (savegenimages == null || "true".compareTo(savegenimages) != 0) {
 			return null;
 		}
 		File file = new File(System.getProperty("java.io.tmpdir"),
