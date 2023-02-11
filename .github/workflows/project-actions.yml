@@ -1,5 +1,5 @@
-name: build-comparator-project
-run-name: Build comparator project
+name: build-qrcode-project
+run-name: Build QRCode project
 
 on: [push,workflow_dispatch]
 
