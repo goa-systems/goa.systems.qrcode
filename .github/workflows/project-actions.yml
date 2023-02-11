@@ -7,7 +7,7 @@ env:
   ARTIFACT_VERSION: 0.0.7
 
 jobs:
-  build-comparator-app:
+  build-qrcode-lib:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
