@@ -11,6 +11,10 @@ repositories {
 	maven {url 'https://maven.goa.systems'}
 }
 
+configurations {
+	testImplementation.extendsFrom(fullSetup)
+}
+
 dependencies {
 
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
