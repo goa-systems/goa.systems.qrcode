@@ -1,6 +1,5 @@
 plugins {
 	id 'java-library'
-	id 'maven-publish'
 }
 
 sourceCompatibility = 1.8
@@ -18,12 +17,19 @@ dependencies {
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 	testImplementation 'org.junit.platform:junit-platform-commons:1.9.2'
 	
-	api 'goa.systems:commons:0.0.3'
+	api 'goa.systems:commons:0.3.1'
 	
 	/* Logging */
 	implementation 'org.slf4j:slf4j-api:2.0.6'
-	testRuntimeOnly 'ch.qos.logback:logback-core:1.4.5'
-	testRuntimeOnly 'ch.qos.logback:logback-classic:1.4.5'
+	
+	/* Specify all dependencies in configuration fullSetup that are conveniently used during development and
+	   that allow execution of the application but which are optional and up to the customer to define. */
+	fullSetup ('ch.qos.logback:logback-core:1.4.5') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+	fullSetup ('ch.qos.logback:logback-classic:1.4.5') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
 	
 	/* QR code logic */
 	api 'com.google.zxing:core:3.5.1'
@@ -43,69 +49,39 @@ tasks.named('test') {
 	systemProperty 'save.generated.images', SAVE_GENERATED_IMAGES
 }
 
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
-publishing {
-	repositories {
-        maven {
-            url = REPO_DIR
-        }
-    }
-    publications {
-        mavenJava(MavenPublication) {
-        	groupId = 'goa.systems'
-        	artifactId = 'qrcode'
-            from components.java
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
-            pom {
-                name = 'GOA systems qrcode'
-                description = 'Library containing qr code generator logic.'
-                url = 'https://goa.systems/qrcode'
-                licenses {
-                    license {
-                        name = 'GPLv3'
-                        url = 'https://www.gnu.org/licenses/gpl-3.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'goa'
-                        name = 'Andreas Gottardi'
-                        email = 'goa@goa.systems'
-                    }
-                }
-                scm {
-                    connection = 'scm:git@github.com:andreasgottardi/goa.systems.qrcode.git'
-                    url = 'https://github.com/goa.systems.qrcode'
-                }
-            }
-        }
-    }
-}
-
-/*  This task exports the generated jar files into the directory "build/remote".
-    Build tasks can grab them from there and handle them as needed. */
-task localPublish (group: 'publishing', description: 'Exports all jar files to publish') {
+task export(group: 'build', description: 'Exports application.') {
 	
-	dependsOn publish
-	mustRunAfter publish
-    doLast {
+	dependsOn build, jar
+	
+	doLast {
+	
 		copy {
-			from(fileTree(REPO_DIR) { includes }.files) {
-		        include '**/*.jar'
-		        include '**/*.pom'
-		    }
-		    into 'build/remote'
-	    }
+			from "build/libs"
+			into "build/export/lib"
+			include "*.jar"
+		}
+		
+		copy {
+			from configurations.runtimeClasspath
+			from configurations.fullSetup
+			into 'build/export/lib'
+		}
+		
+		copy {
+			from 'src/test/resources/logback.xml'
+			into 'build/export/conf'
+		}
 	}
+}
+		
+task distribute(type: Tar, group: 'build', description: 'Creates tgz distribution.') {
+    dependsOn export
+    from 'build/export'
+    archiveExtension = 'tar.gz'
+    compression = Compression.GZIP
+}
+
+java {
+	withSourcesJar()
+	withJavadocJar()
 }
