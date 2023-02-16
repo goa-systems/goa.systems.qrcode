@@ -18,8 +18,8 @@ jobs:
              -Dsonar.projectKey=goa.systems.qrcode \
              -Dsonar.sources=src/main/java \
              -Dsonar.java.binaries=build/classes \
-             -Dsonar.host.url=http://localhost:9000 \
-             -Dsonar.login=sqp_c6817dbf9cee87698737f555fb3f461179321836
+             -Dsonar.host.url=https://sonarqube.dom.schrotti12.eu \
+             -Dsonar.login=sqp_4f406bc9b25527a4cc8a507e4484d668aa558049
       - run: |
              scp build/distributions/goa.systems.qrcode-$ARTIFACT_VERSION.tar.gz foo@tools.goa.systems:/tmp
              ssh foo@tools.goa.systems "deploymaven /tmp/goa.systems.qrcode-$ARTIFACT_VERSION.tar.gz goa.systems qrcode $ARTIFACT_VERSION"
