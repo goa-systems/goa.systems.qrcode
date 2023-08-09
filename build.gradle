@@ -90,9 +90,18 @@ task export(group: 'build', description: 'Exports application.') {
 		}
 	}
 }
+
+task writeVariables(group: 'build', description: 'Writes variables for maven') {
+	dependsOn export
+	doLast {
+		
+		def artifact = rootProject.name.substring(group.size() + 1)
+		file("build/export/vars").text = """export VERSION=${version}\nexport GROUP=${group}\nexport ARTIFACT=${artifact}"""
+	}
+}
 		
 task distribute(type: Tar, group: 'build', description: 'Creates tgz distribution.') {
-    dependsOn export
+    dependsOn writeVariables
     from 'build/export'
     archiveExtension = 'tar.gz'
     compression = Compression.GZIP
