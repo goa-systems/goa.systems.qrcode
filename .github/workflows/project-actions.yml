@@ -4,7 +4,7 @@ run-name: Build QRCode project
 on: [push,workflow_dispatch]
 
 env:
-  ARTIFACT_VERSION: 0.0.7
+  ARTIFACT_VERSION: 0.0.8
 
 jobs:
   build-qrcode-lib:
@@ -23,6 +23,6 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
       - run: |
              scp build/distributions/goa.systems.qrcode-$ARTIFACT_VERSION.tar.gz foo@tools.goa.systems:/tmp
-             ssh foo@tools.goa.systems "deploymaven /tmp/goa.systems.qrcode-$ARTIFACT_VERSION.tar.gz goa.systems qrcode $ARTIFACT_VERSION"
+             ssh foo@tools.goa.systems "deployartifact /tmp/goa.systems.qrcode-$ARTIFACT_VERSION.tar.gz goa.systems qrcode $ARTIFACT_VERSION"
              ssh foo@tools.goa.systems "rm /tmp/goa.systems.qrcode-$ARTIFACT_VERSION.tar.gz"
         if: ${{ github.ref == 'refs/heads/main' }}
