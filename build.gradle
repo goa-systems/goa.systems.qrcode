@@ -9,6 +9,7 @@ java {
 }
 
 version = ARTIFACT_VERSION
+def group = 'goa.systems'
 
 repositories {
 	mavenCentral()
