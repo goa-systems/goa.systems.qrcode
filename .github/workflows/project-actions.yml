@@ -23,7 +23,7 @@ jobs:
           docker run \
           --rm \
           -v "${PWD}:/usr/src" \
-          -e SONAR_SCANNER_OPTS="-Dsonar.host.url=${{ vars.SQSERVER }} -Dsonar.token=${{ secrets.SQSERVER }} -Dsonar.projectKey=goa.systems.qrcode -Dsonar.sources=src/main -Dsonar.java.libraries=build/libs -Dsonar.java.binaries=build/classes -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml -Dsonar.junit.reportsPath=build/test-results -Xdiag" \
+          -e SONAR_SCANNER_OPTS="-Dsonar.host.url=${{ vars.SQSERVER }} -Dsonar.token=${{ secrets.SQTOKEN }} -Dsonar.projectKey=goa.systems.qrcode -Dsonar.sources=src/main -Dsonar.java.libraries=build/libs -Dsonar.java.binaries=build/classes -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml -Dsonar.junit.reportsPath=build/test-results -Xdiag" \
           --network host \
           sonarsource/sonar-scanner-cli
         if: ${{ github.ref == 'refs/heads/main' }}
