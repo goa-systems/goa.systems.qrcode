@@ -13,7 +13,7 @@ def group = 'goa.systems'
 
 repositories {
 	mavenCentral()
-	maven {url 'https://maven.goa.systems'}
+	maven {url 'https://mvn.goa.systems'}
 }
 
 configurations {
