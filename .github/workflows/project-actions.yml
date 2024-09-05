@@ -4,25 +4,34 @@ run-name: Build QRCode project
 on: [push,workflow_dispatch]
 
 env:
-  ARTIFACT_VERSION: 0.0.8
+  ARTIFACT_VERSION: 0.0.9
 
 jobs:
   build-qrcode-lib:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v3
-      - run: chmod u+x gradlew
-      - run: ./gradlew -PARTIFACT_VERSION=$ARTIFACT_VERSION generatePomFileForMavenPublication distribute
+      - name: Set permissions
+        run: |
+          docker run --rm -v "$PWD":/project bash:latest chown --recursive $(id -u):$(id -g) /project
+      - uses: actions/checkout@v4
+      - name: Build project
+        run: docker run --rm -v "$PWD":/home/gradle/project -w /home/gradle/project gradle:jdk11 gradle -PARTIFACT_VERSION=$ARTIFACT_VERSION generatePomFileForMavenPublication distribute
+      - name: Set permissions
+        run: |
+          docker run --rm -v "$PWD":/project bash:latest chown --recursive $(id -u):$(id -g) /project
       - run: |
-             sonar-scanner \
-             -Dsonar.projectKey=goa.systems.qrcode \
-             -Dsonar.sources=src/main/java \
-             -Dsonar.java.binaries=build/classes \
-             -Dsonar.host.url=https://sonarqube.dom.schrotti12.eu \
-             -Dsonar.login=sqp_4f406bc9b25527a4cc8a507e4484d668aa558049
+          docker run \
+          --rm \
+          -v "${PWD}:/usr/src" \
+          -e SONAR_SCANNER_OPTS="-Dsonar.host.url=${{ vars.SQSERVER }} -Dsonar.token=${{ secrets.SQSERVER }} -Dsonar.projectKey=goa.systems.qrcode -Dsonar.sources=src/main -Dsonar.java.libraries=build/libs -Dsonar.java.binaries=build/classes -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml -Dsonar.junit.reportsPath=build/test-results -Xdiag" \
+          --network host \
+          sonarsource/sonar-scanner-cli
         if: ${{ github.ref == 'refs/heads/main' }}
       - run: |
              scp build/distributions/goa.systems.qrcode-$ARTIFACT_VERSION.tar.gz foo@tools.goa.systems:/tmp
              ssh foo@tools.goa.systems "deployartifact /tmp/goa.systems.qrcode-$ARTIFACT_VERSION.tar.gz"
              ssh foo@tools.goa.systems "rm /tmp/goa.systems.qrcode-$ARTIFACT_VERSION.tar.gz"
         if: ${{ github.ref == 'refs/heads/main' }}
+      - name: Set permissions
+        run: |
+          docker run --rm -v "$PWD":/project bash:latest chown --recursive $(id -u):$(id -g) /project
