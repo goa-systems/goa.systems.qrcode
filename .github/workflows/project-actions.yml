@@ -15,7 +15,7 @@ jobs:
           docker run --rm -v "$PWD":/project bash:latest chown --recursive $(id -u):$(id -g) /project
       - uses: actions/checkout@v4
       - name: Build project
-        run: docker run --rm -v "$PWD":/home/gradle/project -w /home/gradle/project gradle:jdk11 gradle -PARTIFACT_VERSION=$ARTIFACT_VERSION generatePomFileForMavenPublication distribute
+        run: docker run --rm -v "$PWD":/home/gradle/project -w /home/gradle/project gradle:jdk17 gradle -PARTIFACT_VERSION=$ARTIFACT_VERSION generatePomFileForMavenPublication distribute
       - name: Set permissions
         run: |
           docker run --rm -v "$PWD":/project bash:latest chown --recursive $(id -u):$(id -g) /project
