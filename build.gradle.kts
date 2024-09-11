@@ -124,6 +124,6 @@ tasks.register<Tar>("distribute") {
     archiveBaseName = rootProject.name
     destinationDirectory = layout.buildDirectory.dir("distributions")
     from(layout.buildDirectory.dir("export"))
-    archiveFileName.set("goa.systems.libsendmail-${version}.tar.gz")
+    archiveFileName.set("goa.systems.qrcode-${version}.tar.gz")
     compression = Compression.GZIP
 }   
