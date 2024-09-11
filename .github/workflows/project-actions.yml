@@ -4,18 +4,18 @@ run-name: Build QRCode project
 on: [push,workflow_dispatch]
 
 env:
-  ARTIFACT_VERSION: 0.0.9
+  ARTIFACT_VERSION: 0.0.10
+  JAVA_VERSION: 17
 
 jobs:
   build-qrcode-lib:
     runs-on: self-hosted
     steps:
       - name: Set permissions
-        run: |
-          docker run --rm -v "$PWD":/project bash:latest chown --recursive $(id -u):$(id -g) /project
+        run: docker run --rm -v "$PWD":/project bash:latest chown --recursive $(id -u):$(id -g) /project
       - uses: actions/checkout@v4
       - name: Build project
-        run: docker run --rm -v "$PWD":/home/gradle/project -w /home/gradle/project gradle:jdk17 gradle -PARTIFACT_VERSION=$ARTIFACT_VERSION generatePomFileForMavenPublication distribute
+        run: docker run --rm -v "$PWD":/home/gradle/project -w /home/gradle/project gradle:jdk$JAVA_VERSION gradle -PARTIFACT_VERSION=$ARTIFACT_VERSION -Pjava.version=$JAVA_VERSION distribute
       - name: Set permissions
         run: |
           docker run --rm -v "$PWD":/project bash:latest chown --recursive $(id -u):$(id -g) /project
@@ -29,7 +29,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
       - run: |
              scp build/distributions/goa.systems.qrcode-$ARTIFACT_VERSION.tar.gz foo@tools.goa.systems:/tmp
-             ssh foo@tools.goa.systems "deployartifact /tmp/goa.systems.qrcode-$ARTIFACT_VERSION.tar.gz"
+             ssh foo@tools.goa.systems "bash -s" < ".github/scripts/deployartifact" "/tmp/goa.systems.qrcode-$ARTIFACT_VERSION.tar.gz"
              ssh foo@tools.goa.systems "rm /tmp/goa.systems.qrcode-$ARTIFACT_VERSION.tar.gz"
         if: ${{ github.ref == 'refs/heads/main' }}
       - name: Set permissions

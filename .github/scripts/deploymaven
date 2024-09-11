@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+JAVAVERS="zulu21.36.17-ca-jdk21.0.4-linux_x64"
+MAVENVERS="3.9.9"
+MAVENDIST="apache-maven-${MAVENVERS}"
+
+DISTJAVA="https://cdn.azul.com/zulu/bin/${JAVAVERS}.tar.gz"
+DISTMAVEN="https://dlcdn.apache.org/maven/maven-3/${MAVENVERS}/binaries/${MAVENDIST}-bin.tar.gz"
+TMPDIR="/tmp/$(uuidgen)"
+
+if [ -d "${TMPDIR}" ]; then rm -rf "${TMPDIR}"; fi
+mkdir -p "${TMPDIR}/download"
+mkdir -p "${TMPDIR}/java"
+mkdir -p "${TMPDIR}/maven"
+
+wget --quiet -O "${TMPDIR}/download/java.tar.gz" "${DISTJAVA}"
+wget --quiet -O "${TMPDIR}/download/maven.tar.gz" "${DISTMAVEN}"
+
+tar -x -f "${TMPDIR}/download/java.tar.gz" -C "${TMPDIR}/java/"
+tar -x -f "${TMPDIR}/download/maven.tar.gz" -C "${TMPDIR}/maven/"
+
+PATH="${TMPDIR}/java/${JAVAVERS}/bin:${TMPDIR}/maven/${MAVENDIST}/bin:$PATH"
+
+mvn --version
+java --version
+
+DIST="$1"
+DIR="/tmp/$(uuidgen)"
+mkdir "${DIR}"
+tar -x -f "${DIST}" -C "${DIR}"
+source "$DIR/vars"
+mvn deploy:deploy-file \
+ -Dfile=${DIR}/lib/${GROUP}.${ARTIFACT}-${VERSION}.jar \
+ -Dsources=${DIR}/lib/${GROUP}.${ARTIFACT}-${VERSION}-sources.jar \
+ -Djavadoc=${DIR}/lib/${GROUP}.${ARTIFACT}-${VERSION}-javadoc.jar \
+ -DgroupId=${GROUP} \
+ -DartifactId=${ARTIFACT} \
+ -Dversion=${VERSION} \
+ -Dpackaging=jar \
+ -DpomFile=${DIR}/conf/pom-default.xml \
+ -DcreateChecksum=true \
+ -Durl=file:/var/www/mvn
+
+rm -rf "${DIR}"
+rm -rf "${TMPDIR}"

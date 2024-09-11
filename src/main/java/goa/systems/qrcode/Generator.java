@@ -42,9 +42,16 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
  */
 public class Generator {
 
-	private static final Logger logger = LoggerFactory.getLogger(Generator.class);
+	private final Logger logger;
 
 	private static final String BARCODE_NOT_SUPPORTED = "Barcodeformat {} currently unsupported.";
+
+	/**
+	 * Default constructor.
+	 */
+	public Generator() {
+		logger = LoggerFactory.getLogger(Generator.class);
+	}
 
 	/**
 	 * Generates a minimal sized QR code that can be scaled to any size
@@ -131,8 +138,8 @@ public class Generator {
 	/**
 	 * Loads base SVG file (empty SVG file).
 	 * 
-	 * @param height
-	 * @param width
+	 * @param height The height of the image
+	 * @param width  The width of the image
 	 * 
 	 * @return org.w3c.Document representation of an empty SVG file.
 	 * @throws SAXException                 in case of error.
