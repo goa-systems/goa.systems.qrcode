@@ -88,8 +88,9 @@ tasks.register<Copy>("copyGeneratedLibraries") {
 
 tasks.register<Copy>("copyGeneratedPomFile") {
     group = "build"
-    description = "Copy generated POM description"
-    dependsOn("generatePomFileForQrcodePublication")
+    description = "Copy generated POM description" 
+    
+    dependsOn("generatePomFileFor" + artifact.replaceFirstChar(Char::titlecase) + "Publication")
     
     from(layout.buildDirectory.file("publications/" + artifact + "/pom-default.xml"))
     into(layout.buildDirectory.dir("export/conf"))
