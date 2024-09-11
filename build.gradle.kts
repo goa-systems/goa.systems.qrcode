@@ -91,7 +91,7 @@ tasks.register<Copy>("copyGeneratedPomFile") {
     description = "Copy generated POM description"
     dependsOn("generatePomFileForQrcodePublication")
     
-    from(layout.buildDirectory.file("publications/qrcode/pom-default.xml"))
+    from(layout.buildDirectory.file("publications/" + artifact + "/pom-default.xml"))
     into(layout.buildDirectory.dir("export/conf"))
 }
 
