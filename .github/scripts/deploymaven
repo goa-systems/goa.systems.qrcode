@@ -30,6 +30,7 @@ mkdir "${DIR}"
 tar -x -f "${DIST}" -C "${DIR}"
 source "$DIR/vars"
 mvn deploy:deploy-file \
+ -e \
  -Dfile=${DIR}/lib/${GROUP}.${ARTIFACT}-${VERSION}.jar \
  -Dsources=${DIR}/lib/${GROUP}.${ARTIFACT}-${VERSION}-sources.jar \
  -Djavadoc=${DIR}/lib/${GROUP}.${ARTIFACT}-${VERSION}-javadoc.jar \
