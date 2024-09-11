@@ -42,5 +42,5 @@ mvn deploy:deploy-file \
  -DcreateChecksum=true \
  -Durl=file:/var/www/mvn
 
-rm -rf "${DIR}"
+# rm -rf "${DIR}"
 rm -rf "${TMPDIR}"
