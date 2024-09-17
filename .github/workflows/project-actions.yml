@@ -4,7 +4,9 @@ run-name: Build QRCode project
 on: [push,workflow_dispatch]
 
 env:
-  ARTIFACT_VERSION: 0.0.10
+  ARTIFACT_GROUP: "goa.systems"
+  ARTIFACT_ID: "qrcode"
+  ARTIFACT_VERSION: 0.0.11
   JAVA_VERSION: 17
 
 jobs:
@@ -15,7 +17,14 @@ jobs:
         run: docker run --rm -v "$PWD":/project bash:latest chown --recursive $(id -u):$(id -g) /project
       - uses: actions/checkout@v4
       - name: Build project
-        run: docker run --rm -v "$PWD":/home/gradle/project -w /home/gradle/project gradle:jdk$JAVA_VERSION gradle -PARTIFACT_VERSION=$ARTIFACT_VERSION -Pjava.version=$JAVA_VERSION distribute
+        run: |
+          docker run --rm -v "$PWD":/home/gradle/project -w /home/gradle/project gradle:jdk$JAVA_VERSION gradle \
+          -PARTIFACT_GROUP=$ARTIFACT_GROUP \
+          -PARTIFACT_ID=$ARTIFACT_ID \
+          -PARTIFACT_VERSION=$ARTIFACT_VERSION \
+          -PJAVA_VERSION=$JAVA_VERSION \
+          -PSAVE_GENERATED_IMAGES=false \
+          distribute
       - name: Set permissions
         run: |
           docker run --rm -v "$PWD":/project bash:latest chown --recursive $(id -u):$(id -g) /project
@@ -28,9 +37,10 @@ jobs:
           sonarsource/sonar-scanner-cli
         if: ${{ github.ref == 'refs/heads/main' }}
       - run: |
-             scp build/distributions/goa.systems.qrcode-$ARTIFACT_VERSION.tar.gz foo@tools.goa.systems:/tmp
-             ssh foo@tools.goa.systems "bash -s" < ".github/scripts/deploymaven" "/tmp/goa.systems.qrcode-$ARTIFACT_VERSION.tar.gz"
-             ssh foo@tools.goa.systems "rm /tmp/goa.systems.qrcode-$ARTIFACT_VERSION.tar.gz"
+          FILENAME=$ARTIFACT_ID-$ARTIFACT_VERSION.tar.gz
+          scp build/distributions/$FILENAME foo@tools.goa.systems:/tmp/$FILENAME
+          ssh foo@tools.goa.systems "bash -s" < ".github/scripts/deploymaven" "/tmp/$FILENAME" "$ARTIFACT_GROUP" "$ARTIFACT_ID" "$ARTIFACT_VERSION"
+          ssh foo@tools.goa.systems "rm /tmp/$FILENAME"
         if: ${{ github.ref == 'refs/heads/main' }}
       - name: Set permissions
         run: |
