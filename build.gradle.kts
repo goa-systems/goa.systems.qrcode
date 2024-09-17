@@ -102,19 +102,7 @@ tasks.jacocoTestReport {
     }
 }
 
-<<<<<<< HEAD
 tasks.register<Copy>("exportFromLocalRepo"){
-=======
-tasks.register<Copy>("copyGeneratedPomFile") {
-    group = "build"
-    description = "Copy generated POM description" 
-    
-    dependsOn("generatePomFileFor" + artifact.replaceFirstChar(Char::titlecase) + "Publication")
-    
-    from(layout.buildDirectory.file("publications/" + artifact + "/pom-default.xml"))
-    into(layout.buildDirectory.dir("export/conf"))
-}
->>>>>>> branch 'main' of git@github.com:goa-systems/goa.systems.qrcode.git
 
     group = "build"
     description = "Exports from local Maven repository"
