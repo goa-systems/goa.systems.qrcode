@@ -35,8 +35,8 @@ val localreponame = "Project"
 val repodir = "repo"
 
 repositories {
-	mavenCentral()
-	maven {
+    mavenCentral()
+    maven {
         url = uri("https://mvn.goa.systems")
     }
 }
@@ -44,35 +44,35 @@ repositories {
 dependencies {
     
     /* https://central.sonatype.com/artifact/org.junit.jupiter/junit-jupiter-api */
-	testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0")
     
     /* https://central.sonatype.com/artifact/org.junit.jupiter/junit-jupiter-engine */
-	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.0")
     
     /* https://central.sonatype.com/artifact/org.junit.platform/junit-platform-commons */
-	testImplementation("org.junit.platform:junit-platform-commons:1.11.0")
+    testImplementation("org.junit.platform:junit-platform-commons:1.11.0")
 	
-	implementation("goa.systems:commons:0.6.0")
+    implementation("goa.systems:commons:0.7.0")
 	
-	/* Logging https://central.sonatype.com/artifact/org.slf4j/slf4j-api */
-	implementation("org.slf4j:slf4j-api:2.0.16")
+    /* Logging https://central.sonatype.com/artifact/org.slf4j/slf4j-api */
+    implementation("org.slf4j:slf4j-api:2.0.16")
 	
-	/* Specify all dependencies in configuration fullSetup that are conveniently used during development and
-	   that allow execution of the application but which are optional and up to the customer to define.
-	   https://central.sonatype.com/artifact/ch.qos.logback/logback-classic
-	*/
-	testImplementation("ch.qos.logback:logback-core:1.5.8")
-	testImplementation("ch.qos.logback:logback-classic:1.5.8")
+    /* Specify all dependencies in configuration fullSetup that are conveniently used during development and
+       that allow execution of the application but which are optional and up to the customer to define.
+       https://central.sonatype.com/artifact/ch.qos.logback/logback-classic
+    */
+    testImplementation("ch.qos.logback:logback-core:1.5.8")
+    testImplementation("ch.qos.logback:logback-classic:1.5.8")
 	
-	/* QR code logic https://central.sonatype.com/artifact/com.google.zxing/core */
-	implementation("com.google.zxing:core:3.5.3")
-	implementation("com.google.zxing:javase:3.5.3")
-	
-	/* Batik required for testing of svg graphics. https://central.sonatype.com/artifact/org.apache.xmlgraphics/batik */
-	implementation("org.apache.xmlgraphics:batik:1.17"){
+    /* QR code logic https://central.sonatype.com/artifact/com.google.zxing/core */
+    implementation("com.google.zxing:core:3.5.3")
+    implementation("com.google.zxing:javase:3.5.3")
+
+    /* Batik required for testing of svg graphics. https://central.sonatype.com/artifact/org.apache.xmlgraphics/batik */
+    implementation("org.apache.xmlgraphics:batik:1.17"){
         exclude(group = "xml-apis", module = "xml-apis")
     }
-	implementation("org.apache.xmlgraphics:batik-transcoder:1.17"){
+    implementation("org.apache.xmlgraphics:batik-transcoder:1.17"){
         exclude(group = "xml-apis", module = "xml-apis")
     }
 }
@@ -85,14 +85,12 @@ java {
 }
 
 tasks.withType<Test> {
-
     finalizedBy(tasks.jacocoTestReport)
+    useJUnitPlatform()
 	
-	useJUnitPlatform()
-	
-	// Take the system property from the "gradle.properties" file or 
-	// from the -Dsave.generated.images=[true|false] command line parameter.
-	systemProperty("save.generated.images", savegeneratedimages)
+    // Take the system property from the "gradle.properties" file or 
+    // from the -Dsave.generated.images=[true|false] command line parameter.
+    systemProperty("save.generated.images", savegeneratedimages)
 }
 
 tasks.jacocoTestReport {
