@@ -53,7 +53,7 @@ dependencies {
     testImplementation("org.junit.platform:junit-platform-commons:1.11.0")
 	
     /* Logging https://central.sonatype.com/artifact/org.slf4j/slf4j-api */
-    implementation("org.slf4j:slf4j-api:2.0.16")
+    api("org.slf4j:slf4j-api:2.0.16")
 	
     /* Specify all dependencies in configuration fullSetup that are conveniently used during development and
        that allow execution of the application but which are optional and up to the customer to define.
