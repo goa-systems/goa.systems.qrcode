@@ -52,8 +52,6 @@ dependencies {
     /* https://central.sonatype.com/artifact/org.junit.platform/junit-platform-commons */
     testImplementation("org.junit.platform:junit-platform-commons:1.11.0")
 	
-    implementation("goa.systems:commons:0.7.0")
-	
     /* Logging https://central.sonatype.com/artifact/org.slf4j/slf4j-api */
     implementation("org.slf4j:slf4j-api:2.0.16")
 	
@@ -64,15 +62,17 @@ dependencies {
     testImplementation("ch.qos.logback:logback-core:1.5.8")
     testImplementation("ch.qos.logback:logback-classic:1.5.8")
 	
+    api("goa.systems:commons:0.7.0")
+	
     /* QR code logic https://central.sonatype.com/artifact/com.google.zxing/core */
-    implementation("com.google.zxing:core:3.5.3")
-    implementation("com.google.zxing:javase:3.5.3")
+    api("com.google.zxing:core:3.5.3")
+    api("com.google.zxing:javase:3.5.3")
 
     /* Batik required for testing of svg graphics. https://central.sonatype.com/artifact/org.apache.xmlgraphics/batik */
-    implementation("org.apache.xmlgraphics:batik:1.17"){
+    api("org.apache.xmlgraphics:batik:1.17"){
         exclude(group = "xml-apis", module = "xml-apis")
     }
-    implementation("org.apache.xmlgraphics:batik-transcoder:1.17"){
+    api("org.apache.xmlgraphics:batik-transcoder:1.17"){
         exclude(group = "xml-apis", module = "xml-apis")
     }
 }
