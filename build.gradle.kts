@@ -20,7 +20,7 @@ if (hasProperty("ARTIFACT_VERSION")) {
 }
 
 // Specify the Java version via property. "11", "17", "21", ...
-var javaversion: String = "17"
+var javaversion: String = "21"
 if (hasProperty("JAVA_VERSION")) {
     javaversion = property("JAVA_VERSION").toString()
 }
@@ -44,23 +44,23 @@ repositories {
 dependencies {
     
     /* https://central.sonatype.com/artifact/org.junit.jupiter/junit-jupiter-api */
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.13.2")
     
     /* https://central.sonatype.com/artifact/org.junit.jupiter/junit-jupiter-engine */
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.13.2")
     
     /* https://central.sonatype.com/artifact/org.junit.platform/junit-platform-commons */
-    testImplementation("org.junit.platform:junit-platform-commons:1.11.0")
+    testImplementation("org.junit.platform:junit-platform-commons:1.13.2")
 	
     /* Logging https://central.sonatype.com/artifact/org.slf4j/slf4j-api */
-    api("org.slf4j:slf4j-api:2.0.16")
+    api("org.slf4j:slf4j-api:2.0.17")
 	
     /* Specify all dependencies in configuration fullSetup that are conveniently used during development and
        that allow execution of the application but which are optional and up to the customer to define.
        https://central.sonatype.com/artifact/ch.qos.logback/logback-classic
     */
-    testImplementation("ch.qos.logback:logback-core:1.5.8")
-    testImplementation("ch.qos.logback:logback-classic:1.5.8")
+    testImplementation("ch.qos.logback:logback-core:1.5.18")
+    testImplementation("ch.qos.logback:logback-classic:1.5.18")
 	
     api("goa.systems:commons:0.7.0")
 	
@@ -69,10 +69,10 @@ dependencies {
     api("com.google.zxing:javase:3.5.3")
 
     /* Batik required for testing of svg graphics. https://central.sonatype.com/artifact/org.apache.xmlgraphics/batik */
-    api("org.apache.xmlgraphics:batik:1.17"){
+    api("org.apache.xmlgraphics:batik:1.19"){
         exclude(group = "xml-apis", module = "xml-apis")
     }
-    api("org.apache.xmlgraphics:batik-transcoder:1.17"){
+    api("org.apache.xmlgraphics:batik-transcoder:1.19"){
         exclude(group = "xml-apis", module = "xml-apis")
     }
 }
