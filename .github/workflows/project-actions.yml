@@ -6,7 +6,7 @@ on: [push,workflow_dispatch]
 env:
   ARTIFACT_GROUP: "goa.systems"
   ARTIFACT_ID: "qrcode"
-  ARTIFACT_VERSION: 0.0.12
+  ARTIFACT_VERSION: 0.0.13
   JAVA_VERSION: 21
 
 jobs:
@@ -50,9 +50,9 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
       - run: |
           FILENAME=$ARTIFACT_ID-$ARTIFACT_VERSION.tar.gz
-          scp -i ${KEYFILE} -o UserKnownHostsFile=${KNOWNHOSTSFILE} build/distributions/$FILENAME foo@tools.goa.systems:/tmp/$FILENAME
-          ssh -i ${KEYFILE} -o UserKnownHostsFile=${KNOWNHOSTSFILE} foo@tools.goa.systems "bash -s" < ".github/scripts/deploymaven" "/tmp/$FILENAME" "$ARTIFACT_GROUP" "$ARTIFACT_ID" "$ARTIFACT_VERSION"
-          ssh -i ${KEYFILE} -o UserKnownHostsFile=${KNOWNHOSTSFILE} foo@tools.goa.systems "rm /tmp/$FILENAME"
+          scp -i ${KEYFILE} -o UserKnownHostsFile=${KNOWNHOSTSFILE} build/distributions/$FILENAME svcdeploy@tools.goa.systems:/tmp/$FILENAME
+          ssh -i ${KEYFILE} -o UserKnownHostsFile=${KNOWNHOSTSFILE} svcdeploy@tools.goa.systems "bash -s" < ".github/scripts/deploymaven" "/tmp/$FILENAME" "$ARTIFACT_GROUP" "$ARTIFACT_ID" "$ARTIFACT_VERSION"
+          ssh -i ${KEYFILE} -o UserKnownHostsFile=${KNOWNHOSTSFILE} svcdeploy@tools.goa.systems "rm /tmp/$FILENAME"
         if: ${{ github.ref == 'refs/heads/main' }}
       - name: Set permissions
         run: |
