@@ -6,7 +6,7 @@ on: [push,workflow_dispatch]
 env:
   ARTIFACT_GROUP: "goa.systems"
   ARTIFACT_ID: "qrcode"
-  ARTIFACT_VERSION: 0.0.13
+  ARTIFACT_VERSION: 0.0.14
   JAVA_VERSION: 21
 
 jobs:

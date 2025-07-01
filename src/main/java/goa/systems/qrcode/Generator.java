@@ -85,7 +85,7 @@ public class Generator {
 			d = getBaseSvg(width * xf, height * yf);
 			Node svg = d.getFirstChild();
 
-			d.getDocumentElement().setAttributeNS(null, "viewbox", String.format("0 0 %d %d", width, height));
+			d.getDocumentElement().setAttributeNS(null, "viewBox", String.format("0 0 %d %d", width, height));
 
 			for (int x = 0; x < width; x++) {
 				for (int y = 0; y < height; y++) {
